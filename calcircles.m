@@ -2,64 +2,68 @@ clear;
 clc
 
 row = 1292;
-col = 964;
-head = 180/2;
-posX = 400;
-posY = 1140;
-Length = 150;
+col = 964; % å›¾åƒçš„é•¿å®½è®¾ç½®
+
+head = 180/2;% ä¿¡æ¯å¤´é•¿åº¦
+
+posX = 482;
+posY = 646;% è®¡ç®—åœ†å¿ƒæ—¶çª—å£çš„ä¸­å¿ƒä½ç½®
+Length = 150;% çª—å£å¤§å°
 stX=posX-Length-1;
 stY=posY-Length-1;
 
 fin = fopen('3.raw','r');
-I = fread(fin,'uint16=>uint16');
+I = fread(fin,'uint16=>uint16');% è¯»å–rawæ–‡ä»¶
 
-for i = 1:1:8
-    if i<=8
+for i = 1:1:8 % æ¯ä¸€å¸§éƒ½æœ‰å…«å¹…å›¾åƒï¼Œé¡»çœ‹å­˜æ—¶å­˜äº†å‡ å¸§
+    if i<=8 
         It = I((row*col)*(i-1)+head+1:row*col*i+head);
     elseif (8<i)&&(i<=16)
         It = I((row*col)*(i-1)+head*2+1:row*col*i+head*2);
-    end    
-    % ¹éÒ»»¯£¬»Ò¶È·¶Î§ÎªÉèÖÃµ½0µ½255
+    end   
+    
+    % å½’ä¸€åŒ–ï¼Œç°åº¦èŒƒå›´ä¸ºè®¾ç½®åˆ°0åˆ°255
     ItMax = max(It);
     temp = round(ItMax/256+0.5);
     It = It/temp;
     t = max(It);
     
-    %2¾ØÕóÔªËØ¶Ô256ÇóÓà
+    %2çŸ©é˜µå…ƒç´ å¯¹256æ±‚ä½™
     %It = mod(It,256);
     
-    It = uint8(It);
+    It = uint8(It); % å°†æ¯ä¸ªåƒç´ ç”±uint16è½¬ä¸ºuint8ï¼Œä»¥ä¾¿äºæ˜¾ç¤º
     zt = reshape(It,row,col);
     zt = zt';
-    switch i
-        case 2 %522nm ×óÓÒ·­×ª
+    switch i % switchæ­¤å¤„ä¸ºäº†ç»™æ¯å¹…å›¾åƒåŠ é•œåƒ
+        case 2 %522nm å·¦å³ç¿»è½¬
             zt = fliplr(zt);
-        case 3 %553nm ×óÓÒ·­×ª
+        case 3 %553nm å·¦å³ç¿»è½¬
             %zt = fliplr(zt);
-        case 4 %575nm ÎŞ
+        case 4 %575nm æ— 
             zt = fliplr(zt);
         case 5 %680nm 180
             zt = fliplr(zt);
             %zt = rot90(zt,2);
-        case 6 %723nm ÉÏÏÂ
+        case 6 %723nm ä¸Šä¸‹
             %zt = flipud(zt);
         case 7 %760nm 180
             %zt = rot90(zt,2);
-        case 8 %900nm ÉÏÏÂ
+        case 8 %900nm ä¸Šä¸‹
             %zt = flipud(zt);  
             zt = fliplr(zt);
         case 10
             zt = fliplr(zt);
-    end
-    %S(:,:,i) = zt;%½«°Ë·ùÍ¼Æ¬´æ´¢µ½SÈıÎ¬Êı×é
-    %figure,k = imshow(zt);title(['img',num2str(i)]);% ÏÔÊ¾Í¼Æ¬
+    end 
+    %S(:,:,i) = zt; % å°†å…«å¹…å›¾ç‰‡å­˜å‚¨åˆ°Sä¸‰ç»´æ•°ç»„
+    %figure,k = imshow(zt);title(['img',num2str(i)]);% æ˜¾ç¤ºå›¾ç‰‡
        
-    %¼ÆËãÔ²ĞÄ
+    %è®¡ç®—åœ†å¿ƒ
     Ipart1=zt(posX-Length:posX+Length,posY-Length:posY+Length);
     figure,imshow(Ipart1);title(['img',num2str(i)]);
+    
     hold on;
-    Ipart2 = im2bw(Ipart1,0.3);%×ªÎª¶şÖµ
-    stats = regionprops(Ipart2,'centroid','MajorAxisLength','MinorAxisLength','Eccentricity');
+    Ipart2 = im2bw(Ipart1,0.3);%è½¬ä¸ºäºŒå€¼
+    stats = regionprops(Ipart2,'centroid','MajorAxisLength','MinorAxisLength','Eccentricity');% å…³é”®å‡½æ•°
     centers  = cat(1, stats.Centroid);
     diameters = (cat(1,stats.MajorAxisLength)+cat(1,stats.MinorAxisLength))/2;
     radii = diameters/2;
@@ -75,11 +79,11 @@ for i = 1:1:8
     plot(Ymax,Xmax,'r+');
     plot(Ymax,Xmax,'ro');
     
-    %     %½«×ø±ê´òÓ¡µ½¿ØÖÆÌ¨
-    %     fprintf('X×ø±ê= %d \n',Xmax-posX+stX);
-    %     fprintf('Y×ø±ê= %d \n',Ymax-posY+stY);
-    %     fprintf('Ô²¶È= %d \n',YD1);
-    %×ø±êÊäÈëµ½Í¼Æ¬ÉÏ
+    %     %å°†åæ ‡æ‰“å°åˆ°æ§åˆ¶å°
+    %     fprintf('Xåæ ‡= %d \n',Xmax-posX+stX);
+    %     fprintf('Yåæ ‡= %d \n',Ymax-posY+stY);
+    %     fprintf('åœ†åº¦= %d \n',YD1);
+    %åæ ‡è¾“å…¥åˆ°å›¾ç‰‡ä¸Š
     text(2,8,['X:',num2str(Xmax-posX+stX-45.4144)],'Color','red','FontSize',14);
     text(2,27,['Y:',num2str(Ymax-posY+stY-37.1615)],'Color','red','FontSize',14);
     text(2,46,['YD:',num2str(YD1)],'Color','red','FontSize',14);
@@ -88,7 +92,7 @@ for i = 1:1:8
     
     
 end
-%figure,imshowpair(S(:,:,1),S(:,:,3));title('²îÒìÍ¼Ïñ');
+%figure,imshowpair(S(:,:,1),S(:,:,3));title('å·®å¼‚å›¾åƒ');
 
 
 
